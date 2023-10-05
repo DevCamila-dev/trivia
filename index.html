@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Perguntas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f7d048; /* Fundo amarelo */
+            color: #000; /* letra preto */
+            margin: 0;
+            padding: 0;
+        }
+
+        /* boas-vindas */
+        .welcome-screen {
+            text-align: center;
+            padding: 20px;
+            margin-top: 100px;
+        }
+
+        .welcome-screen h1 {
+            font-size: 24px;
+        }
+
+        .welcome-screen input[type="text"] {
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        .welcome-screen button {
+            background-color: #000; /* Fundo preto */
+            color: #fff; /* letra branco */
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Estilos para a tela do jogo */
+        .game-screen {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            margin-top: 50px;
+        }
+
+        .game-screen h2 {
+            font-size: 24px;
+        }
+
+        #question-container {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        /* Estilos para as perguntas e respostas */
+        .question {
+            margin-bottom: 10px;
+        }
+
+        .question p {
+            font-weight: bold;
+        }
+
+        .correct-answer p {
+            color: green; /* Texto verde para respostas corretas */
+        }
+
+        /* Estilos para o botão "Jogar Novamente" */
+        #restart-button {
+            background-color: #000; /* Fundo preto */
+            color: #fff; /* letra branco */
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-screen">
+        <h1>Bem-vindo ao Jogo de Perguntas</h1>
+        <input type="text" id="player-name" placeholder="Digite seu nome">
+        <button id="start-button">Começar</button>
+    </div>
+
+    <div class="game-screen">
+        <h2>Olá, <span id="player-name-display"></span></h2>
+        <div id="question-container">
+            <!-- Perguntas e alternativas -->
+        </div>
+        <button id="restart-button">Jogar Novamente</button>
+    </div>
+
+    <script>
+        const playerNameInput = document.getElementById('player-name');
+        const startButton = document.getElementById('start-button');
+        const playerNameDisplay = document.getElementById('player-name-display');
+        const gameScreen = document.querySelector('.game-screen');
+        const questionContainer = document.getElementById('question-container');
+        const restartButton = document.getElementById('restart-button');
+        
+        let playerName = '';
+        
+        startButton.addEventListener('click', () => {
+            playerName = playerNameInput.value;
+            playerNameDisplay.textContent = playerName;
+            playerNameInput.value = ''; // Limpa o campo de entrada
+            showGameScreen();
+            loadQuestions();
+        });
+        
+        // "Jogar Novamente" botao
+        restartButton.addEventListener('click', () => {
+            showWelcomeScreen();
+        });
+        
+        function showGameScreen() {
+            document.querySelector('.welcome-screen').style.display = 'none';
+            gameScreen.style.display = 'block';
+        }
+        
+        function showWelcomeScreen() {
+            gameScreen.style.display = 'none';
+            document.querySelector('.welcome-screen').style.display = 'block';
+        }
+        
+        function loadQuestions() {
+            const questions = [
+                {
+                    question: 'Qual é a capital do Brasil?',
+                    options: ['São Paulo', 'Rio de Janeiro', 'Brasília'],
+                    correctAnswer: 'Brasília'
+                },
+                {
+                    question: 'Quem escreveu "Dom Quixote"?',
+                    options: ['Miguel de Cervantes', 'William Shakespeare', 'Friedrich Nietzsche'],
+                    correctAnswer: 'Miguel de Cervantes'
+                },
+                {
+                    question: 'Qual é o maior planeta do Sistema Solar?',
+                    options: ['Terra', 'Marte', 'Júpiter'],
+                    correctAnswer: 'Júpiter'
+                }
+            ];
+
+            questionContainer.innerHTML = '';
+            questions.forEach((questionObj, index) => {
+                const questionElement = document.createElement('div');
+                questionElement.className = 'question';
+                questionElement.innerHTML = `<p>Pergunta ${index + 1}: ${questionObj.question}</p>`;
+                const radioButtons = [];
+
+                questionObj.options.forEach((option, optionIndex) => {
+                    const radioLabel = document.createElement('label');
+                    const radioButton = document.createElement('input');
+                    radioButton.type = 'radio';
+                    radioButton.name = `question${index + 1}`;
+                    radioButton.value = option;
+                    radioLabel.appendChild(radioButton);
+                    radioLabel.appendChild(document.createTextNode(option));
+                    radioButtons.push(radioButton);
+                    questionElement.appendChild(radioLabel);
+                });
+
+                questionContainer.appendChild(questionElement);
+
+                const answerButton = document.createElement('button');
+                answerButton.textContent = 'Responder';
+                questionElement.appendChild(answerButton);
+
+                answerButton.addEventListener('click', () => {
+                    const selectedAnswer = radioButtons.find(radioButton => radioButton.checked);
+                    if (!selectedAnswer) {
+                        alert('Por favor, selecione uma resposta.');
+                        return;
+                    }
+
+                    const selectedOption = selectedAnswer.value;
+                    if (selectedOption === questionObj.correctAnswer) {
+                        alert('Resposta correta!');
+                    } else {
+                        alert('Resposta incorreta. Tente novamente.');
+                    }
+                });
+            });
+
+            restartButton.style.display = 'block';
+        }
+    </script>
+</body>
